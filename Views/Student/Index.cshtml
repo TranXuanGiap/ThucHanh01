@@ -1,0 +1,59 @@
+﻿@model IEnumerable<ThucHanh01.Models.Student>
+
+@{
+    ViewData["Title"] = "Danh sách sinh viên";
+}
+
+<h2 class="text-primary mb-3">Danh sách sinh viên</h2>
+
+<a asp-area="Admin" asp-controller="Student" asp-action="Add" class="btn btn-primary">
+    + Thêm sinh viên
+</a>
+
+<table class="table table-striped mt-3">
+    <thead class="table-dark">
+        <tr>
+            <th>Ảnh</th>
+            <th>Mã SV</th>
+            <th>Họ tên</th>
+            <th>Ngày sinh</th>
+            <th>Giới tính</th>
+            <th>Ngành</th>
+            <th>Hệ</th>
+            <th>Email</th>
+            <th>Địa chỉ</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var s in Model)
+        {
+            <tr>
+                <td>
+                    <img src="@s.AvatarPath" alt="@s.Name" width="60" height="60" style="border-radius:50%; object-fit:cover;" />
+                </td>
+                <td>@s.Id</td>
+                <td>@s.Name</td>
+                <td>@s.DateOfBorth.ToString("dd/MM/yyyy")</td>
+                <td>
+                    @(s.Gender == ThucHanh01.Models.Gender.Male ? "Nam" : "Nữ")
+                </td>
+                <td>
+                    @{
+                        string branchName = s.Branch switch
+                        {
+                            ThucHanh01.Models.Branch.IT => "CNTT",
+                            ThucHanh01.Models.Branch.BE => "Kinh tế",
+                            ThucHanh01.Models.Branch.CE => "Công trình",
+                            ThucHanh01.Models.Branch.EE => "Điện - Điện tử",
+                            _ => "Khác"
+                        };
+                    }
+                    @branchName
+                </td>
+                <td>@(s.IsRegular ? "Chính quy" : "Phi chính quy")</td>
+                <td>@s.Email</td>
+                <td>@s.Address</td>
+            </tr>
+        }
+    </tbody>
+</table>
