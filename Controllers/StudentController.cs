@@ -4,6 +4,7 @@ using ThucHanh01.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace ThucHanh01.Controllers
 {
@@ -25,7 +26,10 @@ namespace ThucHanh01.Controllers
                         Gender = Gender.Male,
                         IsRegular = true,
                         Address = "A1-2018",
-                        Email = "namg.com",
+                        Email = "nam@gmail.com",
+                        Password = "Abcd@123",
+                        Diem = 8.0,
+                        DateOfBorth = new DateTime(2003,1,1),
                         AvatarPath = "/images/default.png"
                     },
                     new Student()
@@ -36,7 +40,10 @@ namespace ThucHanh01.Controllers
                         Gender = Gender.Male,
                         IsRegular = true,
                         Address = "A1-2019",
-                        Email = "tuanh.com",
+                        Email = "tuan@gmail.com",
+                        Password = "Abcd@123",
+                        Diem = 7.5,
+                        DateOfBorth = new DateTime(2002,5,5),
                         AvatarPath = "/images/default.png"
                     },
                     new Student()
@@ -47,7 +54,10 @@ namespace ThucHanh01.Controllers
                         Gender = Gender.Male,
                         IsRegular = false,
                         Address = "A1-2020",
-                        Email = "phongp.com",
+                        Email = "phong@gmail.com",
+                        Password = "Abcd@123",
+                        Diem = 9.0,
+                        DateOfBorth = new DateTime(2001,3,3),
                         AvatarPath = "/images/default.png"
                     },
                     new Student()
@@ -58,11 +68,58 @@ namespace ThucHanh01.Controllers
                         Gender = Gender.Female,
                         IsRegular = false,
                         Address = "A1-2021",
-                        Email = "maig.com",
+                        Email = "cuc@gmail.com",
+                        Password = "Abcd@123",
+                        Diem = 8.8,
+                        DateOfBorth = new DateTime(2003,10,10),
                         AvatarPath = "/images/default.png"
                     }
                 };
             }
+        }
+
+        [HttpGet]
+        public IActionResult Create()
+        {
+            LoadDropdowns();
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult Add()
+        {
+            LoadDropdowns();
+            return View("Create");
+        }
+
+        [HttpPost]
+        public IActionResult Create(Student s, IFormFile AvatarFile)
+        {
+            if (ModelState.IsValid)
+            {
+                HandleAvatarUpload(s, AvatarFile);
+                s.Id = listStudents.Last().Id + 1;
+                listStudents.Add(s);
+                return View("Index", listStudents);
+            }
+
+            LoadDropdowns();
+            return View(s);
+        }
+
+        [HttpPost]
+        public IActionResult Add(Student s, IFormFile AvatarFile)
+        {
+            if (ModelState.IsValid)
+            {
+                HandleAvatarUpload(s, AvatarFile);
+                s.Id = listStudents.Last().Id + 1;
+                listStudents.Add(s);
+                return View("Index", listStudents);
+            }
+
+            LoadDropdowns();
+            return View("Create", s);
         }
 
         public IActionResult Index()
@@ -71,54 +128,8 @@ namespace ThucHanh01.Controllers
         }
 
         [HttpGet]
-        public IActionResult Create()
-        {
-            ViewBag.AllGenders = Enum.GetValues(typeof(Gender));
-            ViewBag.AllBranches = new List<SelectListItem>
-            {
-                new SelectListItem { Text = "IT", Value = "0" },
-                new SelectListItem { Text = "BE", Value = "1" },
-                new SelectListItem { Text = "CE", Value = "2" },
-                new SelectListItem { Text = "EE", Value = "3" }
-            };
-            return View();
-        }
-
-        [HttpPost]
-        public IActionResult Create(Student s, IFormFile AvatarFile)
-        {
-            HandleAvatarUpload(s, AvatarFile);
-            s.Id = listStudents[listStudents.Count - 1].Id + 1;
-            listStudents.Add(s);
-            return View("Index", listStudents);
-        }
-
-        [HttpGet]
         public IActionResult List()
         {
-            return View("Index", listStudents);
-        }
-
-        [HttpGet]
-        public IActionResult Add()
-        {
-            ViewBag.AllGenders = Enum.GetValues(typeof(Gender));
-            ViewBag.AllBranches = new List<SelectListItem>
-            {
-                new SelectListItem { Text = "IT", Value = "0" },
-                new SelectListItem { Text = "BE", Value = "1" },
-                new SelectListItem { Text = "CE", Value = "2" },
-                new SelectListItem { Text = "EE", Value = "3" }
-            };
-            return View("Create");
-        }
-
-        [HttpPost]
-        public IActionResult Add(Student s, IFormFile AvatarFile)
-        {
-            HandleAvatarUpload(s, AvatarFile);
-            s.Id = listStudents[listStudents.Count - 1].Id + 1;
-            listStudents.Add(s);
             return View("Index", listStudents);
         }
 
@@ -144,6 +155,19 @@ namespace ThucHanh01.Controllers
             {
                 s.AvatarPath = "/images/default.png";
             }
+        }
+
+        private void LoadDropdowns()
+        {
+            ViewBag.AllGenders = Enum.GetValues(typeof(Gender)).Cast<Gender>().ToList();
+
+            ViewBag.AllBranches = new List<SelectListItem>()
+            {
+                new SelectListItem { Text = "IT", Value = "1" },
+                new SelectListItem { Text = "BE", Value = "2" },
+                new SelectListItem { Text = "CE", Value = "3" },
+                new SelectListItem { Text = "EE", Value = "4" }
+            };
         }
     }
 }
